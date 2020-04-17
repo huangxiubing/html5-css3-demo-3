@@ -1,0 +1,127 @@
+<!doctype html>
+/*拖拽效果*/
+<html lang="en" ondragstart="return false">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="Generator" content="EditPlus®">
+    <meta name="Author" content="">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="">
+    <title>相册旋转</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #000;
+        }
+
+        /*如果要让某个元素具有3D效果 景深*/
+        #perspective {
+            perspective: 800px;
+        }
+
+        #warp {
+            width: 228px;
+            height: 99px;
+            /* border:1px solid red;*/
+            margin: 150px auto;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-10deg) rotateY(0deg);
+        }
+
+        #warp img {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="perspective" class="">
+        <div id="warp" class="">
+            <img src="img/1.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/2.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/3.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/4.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/5.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/6.jpg" width="228" height="99" border="0" alt="">
+            <img src="img/7.jpg" width="228" height="99" border="0" alt="">
+        </div>
+    </div>
+    <script type="text/javascript">
+        /*1.每一张图片都旋转相对应的度数
+	  2.相册入场动画效果
+	  3.拖拽效果
+	*/
+        //通过元素的标签 获取元素
+        var oImg = document.getElementsByTagName("img");
+        //获取图片集合的数量
+        var oImgLen = oImg.length;
+        //获取图片粗旋转的单位度数
+        var deg = 360 / oImgLen;
+
+        window.onload = function () {
+            //页面加载完毕之后执行的脚本程序
+            for (var i = 0; i < oImgLen; i++) {
+                //每一张图片的旋转度数值
+                var countDeg = deg * i;
+                oImg[i].style.transform = "rotateX(-10deg) rotateY(" + countDeg + "deg) translateZ(400px)";
+                //延迟时间
+                var delayTime = oImgLen - i;
+                //console.log(delayTime);
+                //注意transition的格式
+                oImg[i].style.transition = "1s " + delayTime * 0.5 + "s";
+            }
+        }
+        /*
+         拖拽:
+         1.在哪个地方拖拽 document就代表页面
+         2.动怍分解
+             鼠标的 点击>移动>松开
+         3.鼠标移动 相册旋转>>改变wrap相册的transform的旋转度数值>>鼠标移动的距离有关系
+             检测鼠标在每一次移动的时候的位置
+         4.每一次移动鼠标的距离差 实际上就是每一次鼠标移动相册旋转的度数
+         	距离差 = 当前鼠标位置-上一次移动鼠标的位置
+        	每一次
+        */
+        var rotateX = -20,
+            rotateY = 0;
+
+        document.onmousedown = function (ev) {
+            //鼠标按下事件  不包括松开
+            //console.log(ev.clientX,ev.clientY);
+            //console.log("anxia")
+            //初始化第一次点击的鼠标位置 相对第一次移动就是旧的值
+            var oldX = ev.clientX,
+                oldY = ev.clientY;
+            this.onmousemove = function (ev) {
+                //移动
+                //console.log(ev.clientX,ev.clientY);
+                //console.log("移动")
+                var newX = ev.clientX,
+                    newY = ev.clientY; //每一次移动所产生的一个新的坐标值
+                var minusX = newX - oldX,
+                    minusY = newY - oldY;
+                //console.log(minusX,minusY)
+                rotateX -= minusY * 0.1; //度数累加
+                rotateY += minusX * 0.1;
+                warp.style.transform = "rotateX(" + rotateX + "deg) rotateY(" + rotateY + "deg)";
+                //新的值用完之后就变得旧的了
+                oldX = newX;
+                oldY = newY;
+            }
+            this.onmouseup = function (ev) {
+                //松开
+                //console.log("松开");
+                this.onmousemove = null; //清空鼠标移动事件
+            }
+        }
+    </script>
+
+</body>
+
+</html>
